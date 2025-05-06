@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: yourname
+      changes:
+        - createTable:
+            tableName: employee
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
+              - column: { name: name, type: VARCHAR(255) }
+              - column: { name: position, type: VARCHAR(255) }
+              - column: { name: date_of_birth, type: DATE }
+              - column: { name: is_manager, type: BOOLEAN }
+
+        - createTable:
+            tableName: meeting
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
+              - column: { name: title, type: VARCHAR(255) }
+              - column: { name: start_time, type: TIMESTAMP }
+              - column: { name: end_time, type: TIMESTAMP }
+              - column: { name: finalized, type: BOOLEAN }
+              - column: { name: employee_id, type: BIGINT }
+              - column: { name: manager_id, type: BIGINT }
+
+        - insert:
+            tableName: employee
+            columns:
+              - column: { name: name, value: "Ancika" }
+              - column: { name: position, value: "Backend Developer" }
+              - column: { name: date_of_birth, valueDate: "1990-01-01" }
+              - column: { name: is_manager, valueBoolean: false }
+
+        - insert:
+            tableName: employee
+            columns:
+              - column: { name: name, value: "Bécike" }
+              - column: { name: position, value: "Tester" }
+              - column: { name: date_of_birth, valueDate: "1991-01-01" }
+              - column: { name: is_manager, valueBoolean: false }
+
+        - insert:
+            tableName: employee
+            columns:
+              - column: { name: name, value: "Cecike" }
+              - column: { name: position, value: "Tester" }
+              - column: { name: date_of_birth, valueDate: "1992-01-01" }
+              - column: { name: is_manager, valueBoolean: false }
+        - insert:
+            tableName: employee
+            columns:
+              - column: { name: name, value: "Duduska" }
+              - column: { name: position, value: "HR Manager" }
+              - column: { name: date_of_birth, valueDate: "1993-01-01" }
+              - column: { name: is_manager, valueBoolean: true }
+        - insert:
+            tableName: employee
+            columns:
+              - column: { name: name, value: "Évike" }
+              - column: { name: position, value: "HR Manager" }
+              - column: { name: date_of_birth, valueDate: "1994-01-01" }
+              - column: { name: is_manager, valueBoolean: true }
+        - insert:
+            tableName: employee
+            columns:
+              - column: { name: name, value: "Ferike" }
+              - column: { name: position, value: "Developer" }
+              - column: { name: date_of_birth, valueDate: "1995-01-01" }
+              - column: { name: is_manager, valueBoolean: false }
