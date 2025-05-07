@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hr-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hr-app
+  template:
+    metadata:
+      labels:
+        app: hr-app
+    spec:
+      containers:
+        - name: hr-app
+          image: hr-app:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: hr-app-config
+                  key: SERVER_PORT
+            - name: EXTERNAL_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: hr-app-config
+                  key: EXTERNAL_URL
