@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: hr-app
-          image: hr-app:latest
+          image: docker.io/library/hr-app:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080
           env:
