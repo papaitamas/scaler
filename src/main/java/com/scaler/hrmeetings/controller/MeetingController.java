@@ -2,7 +2,6 @@ package com.scaler.hrmeetings.controller;
 
 import com.scaler.hrmeetings.dto.MeetingDto;
 import com.scaler.hrmeetings.dto.MeetingPatchDto;
-import com.scaler.hrmeetings.mapper.MeetingMapper;
 import com.scaler.hrmeetings.dto.MeetingSearchCriteria;
 import com.scaler.hrmeetings.security.JwtRole;
 import com.scaler.hrmeetings.security.JwtTokenUtil;

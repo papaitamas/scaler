@@ -1,7 +1,7 @@
 package com.scaler.hrmeetings.repository;
 
-import com.scaler.hrmeetings.model.Meeting;
 import com.scaler.hrmeetings.dto.MeetingSearchCriteria;
+import com.scaler.hrmeetings.model.Meeting;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
