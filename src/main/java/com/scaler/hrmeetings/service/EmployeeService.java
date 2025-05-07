@@ -1,6 +1,7 @@
 package com.scaler.hrmeetings.service;
 
 import com.scaler.hrmeetings.dto.EmployeeDto;
+import com.scaler.hrmeetings.dto.EmployeePatchDto;
 import com.scaler.hrmeetings.mapper.EmployeeMapper;
 import com.scaler.hrmeetings.model.Employee;
 import com.scaler.hrmeetings.repository.EmployeeRepository;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +31,8 @@ public class EmployeeService {
     }
 
     public EmployeeDto findById(Long id) {
-        Employee employee = employeeRepository.findById(id).orElseThrow();
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee not found"));
         return employeeMapper.toDto(employee);
     }
 
@@ -50,5 +51,26 @@ public class EmployeeService {
 
     public void deleteById(Long id) {
         employeeRepository.deleteById(id);
+    }
+
+    public EmployeeDto patch(Long employeeId, EmployeePatchDto dto) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+
+        if (dto.getName() != null) {
+            employee.setName(dto.getName());
+        }
+        if (dto.getPosition() != null) {
+            employee.setPosition(dto.getPosition());
+        }
+        if (dto.getDateOfBirth() != null) {
+            employee.setDateOfBirth(dto.getDateOfBirth());
+        }
+
+        if(dto.getManager() != null) {
+            employee.setManager(dto.getManager());
+        }
+
+        return employeeMapper.toDto(employeeRepository.save(employee));
     }
 }

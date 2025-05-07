@@ -13,7 +13,6 @@ public class Meeting {
     private String title;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-
     private boolean finalized;
 
     @ManyToOne

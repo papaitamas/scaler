@@ -16,7 +16,6 @@ public class Employee {
     private String name;
     private String position;
     private LocalDate dateOfBirth;
-
     private boolean isManager;
 
     public Long getId() {

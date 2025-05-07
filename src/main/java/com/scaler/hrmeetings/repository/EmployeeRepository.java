@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
-    // Itt később bővítheted pl. kereséssel: findByName, findByPosition, stb.
 }

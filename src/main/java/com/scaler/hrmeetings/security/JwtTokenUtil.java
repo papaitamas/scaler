@@ -1,16 +1,11 @@
 package com.scaler.hrmeetings.security;
 
-import com.scaler.hrmeetings.model.Meeting;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +28,7 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    public static void checkRoleInJwtToken(JwtRole expectedRole) {
+    public static void checkRoleInToken(JwtRole expectedRole) {
         JwtUserDetails user = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userRole = user.getRole();
 

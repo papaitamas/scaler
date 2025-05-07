@@ -23,7 +23,10 @@ public class EmployeeMapper {
         employee.setName(dto.getName());
         employee.setPosition(dto.getPosition());
         employee.setDateOfBirth(dto.getDateOfBirth());
-        employee.setManager(dto.isManager());
+        if (dto.getManager() != null) {
+            employee.setManager(dto.getManager());
+        }
+
         return employee;
     }
 }

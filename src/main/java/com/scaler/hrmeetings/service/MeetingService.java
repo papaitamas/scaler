@@ -2,10 +2,14 @@ package com.scaler.hrmeetings.service;
 
 import com.scaler.hrmeetings.dto.EmployeeDto;
 import com.scaler.hrmeetings.dto.MeetingDto;
+import com.scaler.hrmeetings.dto.MeetingPatchDto;
 import com.scaler.hrmeetings.mapper.EmployeeMapper;
 import com.scaler.hrmeetings.mapper.MeetingMapper;
+import com.scaler.hrmeetings.model.Employee;
 import com.scaler.hrmeetings.model.Meeting;
+import com.scaler.hrmeetings.dto.MeetingSearchCriteria;
 import com.scaler.hrmeetings.repository.MeetingRepository;
+import com.scaler.hrmeetings.repository.MeetingSpecification;
 import com.scaler.hrmeetings.security.JwtUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -43,14 +47,15 @@ public class MeetingService {
 
         List<Meeting> meetings = meetingRepository.findAll();
 
-        Stream<Meeting> filteredMeetings = meetings
-                .stream()
+        Stream<Meeting> filteredMeetings = meetings.stream()
                 .filter(m -> m.getEmployee().getId().equals(callerId) || m.getManager().getId().equals(callerId));
         return filteredMeetings.map(meetingMapper::toDto).toList();
     }
 
-    public Optional<Meeting> findById(Long id) {
-        return meetingRepository.findById(id);
+    public MeetingDto findById(Long id) {
+        Meeting meeting = meetingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meeting not found"));
+        return meetingMapper.toDto(meeting);
     }
 
     public MeetingDto create(MeetingDto dto) {
@@ -60,36 +65,30 @@ public class MeetingService {
     }
     public MeetingDto update(MeetingDto dto) {
         Meeting meeting = getMeetingFromDto(dto);
-        checkAccess(meeting);
 
-        if (meeting.isFinalized()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meeting already finalized");
-        }
+        checkAccess(meeting);
 
         meeting.setId(dto.getId());
 
         return meetingMapper.toDto(meetingRepository.save(meeting));
     }
 
-    public void deleteById(Long meetingId) {
+    public void deleteById(Long id) {
         Meeting meeting = meetingRepository
-                .findById(meetingId)
+                .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meeting not found"));
 
         checkAccess(meeting);
 
-        meetingRepository.deleteById(meetingId);
+        meetingRepository.deleteById(id);
     }
 
     @Transactional
-    public Meeting finalizeMeeting(Long meetingId) {
-        Meeting meeting = meetingRepository
-                .findById(meetingId)
+    public MeetingDto finalizeMeeting(Long id) {
+        Meeting meeting = meetingRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meeting not found"));
 
-        if (meeting.isFinalized()) {
-            throw new RuntimeException("Meeting already finalized");
-        }
+        checkAccess(meeting);
 
         List<Meeting> overlappingFinalizedMeetings =
                 meetingRepository.findByFinalizedTrueAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
@@ -101,7 +100,7 @@ public class MeetingService {
         }
 
         meeting.setFinalized(true);
-        return meetingRepository.save(meeting);
+        return meetingMapper.toDto(meetingRepository.save(meeting));
     }
 
     public List<Meeting> searchMeetings(
@@ -113,15 +112,46 @@ public class MeetingService {
         return meetingRepository.findAll();
     }
 
+    public MeetingDto patch(Long id, MeetingPatchDto dto) {
+        Meeting meeting = meetingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meeting not found"));
+
+        checkAccess(meeting);
+
+        if (dto.getEmployeeId() != null) {
+            Employee employee = employeeMapper.toEntity(employeeService.findById(dto.getEmployeeId()));
+            meeting.setEmployee (employee);
+        }
+
+        if (dto.getManagerId() != null) {
+            Employee manager = employeeMapper.toEntity(employeeService.findById(dto.getManagerId()));
+            meeting.setEmployee (manager);
+        }
+
+        if (dto.getStartTime() != null) {
+            meeting.setStartTime (dto.getStartTime());
+        }
+
+        if (dto.getEndTime() != null) {
+            meeting.setEndTime (dto.getEndTime());
+        }
+
+        if (dto.getTitle() != null) {
+            meeting.setTitle (dto.getTitle());
+        }
+
+        return meetingMapper.toDto(meetingRepository.save(meeting));
+    }
+
     private Meeting getMeetingFromDto(MeetingDto dto) {
         EmployeeDto employee = employeeService.findById(dto.getEmployeeId());
         EmployeeDto manager = employeeService.findById(dto.getManagerId());
 
-        if (employee.isManager()) {
+        if (employee.getManager() == true) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Employee should not be a manager");
         }
 
-        if (!manager.isManager()) {
+        if (manager.getManager() != true) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Manager should be a valid manager");
         }
         return meetingMapper.toEntity(dto, employeeMapper.toEntity(employee), employeeMapper.toEntity(manager));
@@ -135,6 +165,16 @@ public class MeetingService {
                 !callerId.equals(meeting.getManager().getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only meeting participants can access this meeting");
         }
+
+        if (meeting.isFinalized()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Meeting already finalized");
+        }
     }
 
+    public List<MeetingDto> searchMeetings(MeetingSearchCriteria criteria) {
+        List<Meeting> meetings = meetingRepository.findAll(MeetingSpecification.build(criteria));
+        return meetings.stream()
+                .map(meetingMapper::toDto)
+                .collect(Collectors.toList());
+    }
 }

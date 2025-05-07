@@ -7,7 +7,7 @@ public class EmployeeDto {
     private String name;
     private String position;
     private LocalDate dateOfBirth;
-    private boolean isManager;
+    private Boolean manager;
 
     public Long getId() {
         return id;
@@ -41,11 +41,11 @@ public class EmployeeDto {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public boolean isManager() {
-        return isManager;
+    public Boolean getManager() {
+        return manager;
     }
 
-    public void setManager(boolean manager) {
-        isManager = manager;
+    public void setManager(Boolean manager) {
+        this.manager = manager;
     }
 }

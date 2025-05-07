@@ -1,7 +1,6 @@
 package com.scaler.hrmeetings.mapper;
 
 import com.scaler.hrmeetings.dto.MeetingDto;
-import com.scaler.hrmeetings.dto.MeetingDto;
 import com.scaler.hrmeetings.model.Employee;
 import com.scaler.hrmeetings.model.Meeting;
 import org.springframework.stereotype.Component;
