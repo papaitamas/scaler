@@ -9,10 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class HrMeetingsApplication {
 
     public static void main(String[] args) {
-        // only for testing purpose to get token for PostMan
-        String token = JwtTokenUtil.generateToken(1L, JwtRole.WRITE, 1000 * 60 * 60);
-        System.out.println("Bearer " + token);
-
         SpringApplication.run(HrMeetingsApplication.class, args);
     }
 

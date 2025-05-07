@@ -15,6 +15,7 @@ public class JwtTokenUtil {
     private static final Set<String> READ_ROLES = Set.of(JwtRole.READ.name(), JwtRole.WRITE.name());
     private static final Set<String> WRITE_ROLES = Set.of(JwtRole.WRITE.name());
 
+    // just for testing in Postman to have temporary token, not necessary 
     public static String generateToken(Long callerId, JwtRole role, long expirationMillis) {
         return Jwts.builder()
                 .setSubject("user@example.com")
